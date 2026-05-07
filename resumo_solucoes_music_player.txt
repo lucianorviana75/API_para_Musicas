@@ -1,0 +1,79 @@
+RESUMO DAS SOLUÇÕES – PROJETO MUSIC PLAYER (ANDROID)
+
+Este documento descreve, de forma direta, cada problema encontrado e a solução aplicada durante o desenvolvimento e execução do aplicativo Music Player.
+
+--------------------------------------------------
+1) PROBLEMA: MODO DESENVOLVEDOR NÃO APARECIA
+--------------------------------------------------
+Solução:
+- Identificar que tocar várias vezes em "Android 15" abre apenas o Easter Egg.
+- Ativar o modo desenvolvedor tocando 7 vezes em:
+  Configurações → Sobre o telefone → Número da versão (Build Number).
+- Depois disso, acessar Configurações → Sistema → Opções do desenvolvedor.
+
+--------------------------------------------------
+2) PROBLEMA: DEPURAÇÃO USB NÃO FUNCIONAVA
+--------------------------------------------------
+Solução:
+- Ativar "Depuração USB" dentro das Opções do desenvolvedor.
+- Conectar o celular ao computador com a tela desbloqueada.
+- Aceitar o popup "Permitir depuração USB".
+
+--------------------------------------------------
+3) PROBLEMA: adb devices NÃO MOSTRAVA O CELULAR
+--------------------------------------------------
+Solução:
+- Garantir que o USB do celular estivesse em:
+  "Transferir arquivos / Android Auto".
+- Usar cabo USB com suporte a dados.
+- Reiniciar o ADB:
+  adb kill-server
+  adb start-server
+- Verificar drivers no Windows (Android ADB Interface).
+
+--------------------------------------------------
+4) PROBLEMA: ANDROID STUDIO NÃO MOSTRAVA BOTÃO RUN (▶)
+--------------------------------------------------
+Solução:
+- Criar uma Run Configuration manualmente:
+  Add Configuration → Android App.
+- Associar a Run Configuration ao módulo correto.
+
+--------------------------------------------------
+5) PROBLEMA: ERRO "Module not specified"
+--------------------------------------------------
+Solução:
+- Fechar o Android Studio.
+- Reabrir o projeto selecionando a pasta raiz (onde ficam os arquivos Gradle).
+- Aguardar o Gradle Sync.
+- Criar novamente a Run Configuration com Module = app.
+
+--------------------------------------------------
+6) PROBLEMA: ERRO "package MediaStore.Audio does not exist"
+--------------------------------------------------
+Solução:
+- Identificar falta de import no código.
+- Adicionar no MainActivity.java:
+  import android.provider.MediaStore;
+
+--------------------------------------------------
+7) PROBLEMA: AVISOS DE API DEPRECATED
+--------------------------------------------------
+Solução:
+- Entender que avisos não impedem a execução.
+- Manter o código funcionando e planejar melhorias futuras.
+
+--------------------------------------------------
+8) RESULTADO FINAL
+--------------------------------------------------
+- Projeto compilando sem erros.
+- App instalado no celular real.
+- Música sendo listada e reproduzida corretamente.
+- Ambiente Android totalmente configurado.
+
+--------------------------------------------------
+9) LIÇÃO PRINCIPAL
+--------------------------------------------------
+Cada erro encontrado teve causa técnica clara e solução objetiva. A persistência, leitura dos erros e configuração correta do ambiente foram essenciais para o sucesso.
+
+FIM DO RESUMO DAS SOLUÇÕES

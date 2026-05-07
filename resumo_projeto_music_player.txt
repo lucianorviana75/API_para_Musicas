@@ -1,0 +1,54 @@
+RESUMO DO PROCESSO – PROJETO MUSIC PLAYER (ANDROID)
+
+1) CONTEXTO INICIAL
+- Objetivo: executar e testar um aplicativo Android (Music Player em Java) em um celular físico.
+- Ambiente: Android Studio no Windows e celular Android (Samsung, Android 15).
+
+2) DIFICULDADES INICIAIS
+- O celular não aparecia para execução no Android Studio.
+- O comando adb devices não listava nenhum dispositivo.
+- O modo desenvolvedor parecia não existir ou não abria.
+
+3) ATIVAÇÃO DO MODO DESENVOLVEDOR (ANDROID 15)
+- Descoberta de que tocar várias vezes em “Android 15” abre apenas o Easter Egg (tela verde).
+- O local correto é “Número da versão (Build Number)”.
+- Após tocar 7 vezes em “Número da versão”, o modo desenvolvedor foi ativado.
+- Dentro de Opções do desenvolvedor foi ativada a Depuração USB.
+
+4) CONEXÃO ADB (DEPURAÇÃO USB)
+- Instalação/uso correto do adb via Android SDK (platform-tools).
+- Configuração do USB do celular em “Transferir arquivos / Android Auto”.
+- Aceitação do popup “Permitir depuração USB”.
+- Comando adb devices passou a mostrar:
+  "XXXXXXX   device"
+
+5) PROBLEMAS NO ANDROID STUDIO
+- O botão Run (▶) não aparecia.
+- Motivo: não existia Run Configuration.
+- Foi criada uma Run Configuration do tipo "Android App".
+
+6) ERRO DE MÓDULO
+- Erro: "Module not specified".
+- Causa: o projeto havia sido aberto pela pasta errada.
+- Solução: reabrir o Android Studio selecionando a pasta raiz do projeto (onde ficam os arquivos Gradle).
+- Após isso, o módulo “app” passou a aparecer corretamente.
+
+7) ERRO DE COMPILAÇÃO NO CÓDIGO
+- Erro: "package MediaStore.Audio does not exist".
+- Causa: faltava o import correto do MediaStore.
+- Solução: adicionar em MainActivity.java:
+  import android.provider.MediaStore;
+
+8) RESULTADO FINAL
+- Projeto sincronizado com Gradle.
+- Run Configuration funcionando.
+- Celular reconhecido como dispositivo de execução.
+- Aplicativo compilou, instalou e rodou corretamente no celular.
+
+9) CONQUISTAS
+- Ambiente de desenvolvimento Android configurado do zero.
+- Celular físico configurado para depuração.
+- Aplicação Music Player funcionando.
+- Superação de problemas comuns de Android Studio, ADB, Gradle e permissões.
+
+FIM DO RESUMO
