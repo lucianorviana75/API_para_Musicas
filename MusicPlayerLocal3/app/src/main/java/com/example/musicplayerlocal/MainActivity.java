@@ -24,21 +24,17 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    // UI
     private ListView listaMusicas;
     private TextView nomeMusica, tempoAtual, tempoTotal;
     private SeekBar seekBar;
     private Button botaoPlay, botaoPause, botaoStop, botaoNext, botaoPrev;
 
-    // Dados
     private final ArrayList<String> nomes = new ArrayList<>();
     private final ArrayList<String> caminhos = new ArrayList<>();
     private int musicaAtual = -1;
 
-    // Player
     private MediaPlayer mediaPlayer;
 
-    // Tempo
     private final Handler handler = new Handler();
     private Runnable atualizarTempo;
 
@@ -47,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Views
         listaMusicas = findViewById(R.id.listaMusicas);
         nomeMusica   = findViewById(R.id.nomeMusica);
         tempoAtual   = findViewById(R.id.tempoAtual);
@@ -66,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         pedirPermissao();
     }
 
-    // ================= LISTA =================
+    /* ===== LISTA ===== */
 
     private void configurarLista() {
         listaMusicas.setOnItemClickListener((parent, view, position, id) -> {
@@ -84,15 +79,16 @@ public class MainActivity extends AppCompatActivity {
             nomes.add(new File(p).getName());
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_activated_1,
-                nomes
+        listaMusicas.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_list_item_activated_1,
+                        nomes
+                )
         );
-        listaMusicas.setAdapter(adapter);
     }
 
-    // ================= PLAYER =================
+    /* ===== PLAYER ===== */
 
     private void tocarMusica(int index) {
         pararMusica();
@@ -103,13 +99,16 @@ public class MainActivity extends AppCompatActivity {
         nomeMusica.setText(nomes.get(index));
         listaMusicas.setItemChecked(index, true);
 
-        // tempo total
         tempoTotal.setText(formatarTempo(mediaPlayer.getDuration()));
-
-        // seekbar
         seekBar.setMax(mediaPlayer.getDuration());
 
         iniciarAtualizacaoTempo();
+
+        // ✅ AUTO-NEXT
+        mediaPlayer.setOnCompletionListener(mp -> {
+            musicaAtual = (musicaAtual + 1) % caminhos.size();
+            tocarMusica(musicaAtual);
+        });
     }
 
     private void pararMusica() {
@@ -120,12 +119,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         finalizarAtualizacaoTempo();
+        seekBar.setProgress(0);
         tempoAtual.setText("0:00");
         tempoTotal.setText("0:00");
-        seekBar.setProgress(0);
     }
 
-    // ================= BOTÕES =================
+    /* ===== BOTÕES ===== */
 
     private void configurarBotoes() {
 
@@ -145,21 +144,17 @@ public class MainActivity extends AppCompatActivity {
         botaoStop.setOnClickListener(v -> pararMusica());
 
         botaoNext.setOnClickListener(v -> {
-            if (!caminhos.isEmpty()) {
-                musicaAtual = (musicaAtual + 1) % caminhos.size();
-                tocarMusica(musicaAtual);
-            }
+            musicaAtual = (musicaAtual + 1) % caminhos.size();
+            tocarMusica(musicaAtual);
         });
 
         botaoPrev.setOnClickListener(v -> {
-            if (!caminhos.isEmpty()) {
-                musicaAtual = (musicaAtual - 1 + caminhos.size()) % caminhos.size();
-                tocarMusica(musicaAtual);
-            }
+            musicaAtual = (musicaAtual - 1 + caminhos.size()) % caminhos.size();
+            tocarMusica(musicaAtual);
         });
     }
 
-    // ================= SEEKBAR + TEMPO =================
+    /* ===== SEEKBAR + TEMPO ===== */
 
     private void configurarSeekBar() {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -207,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         return String.format("%d:%02d", minutos, segundos);
     }
 
-    // ================= PERMISSÃO =================
+    /* ===== PERMISSÃO ===== */
 
     private void pedirPermissao() {
         if (ContextCompat.checkSelfPermission(
@@ -245,4 +240,3 @@ public class MainActivity extends AppCompatActivity {
         pararMusica();
     }
 }
-

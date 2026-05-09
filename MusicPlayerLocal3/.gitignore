@@ -13,5 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
-
-*.iml
+# Python / Django (não fazem parte do projeto Android)
+__pycache__/
+*.pyc
+*.sqlite3
+api_musicas/
+*.py
