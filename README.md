@@ -105,16 +105,19 @@ Essa estratégia reduz regressões e facilita manutenção e evolução.
 ---
 
 ## 📂 Status do Projeto
+
 - ## ✅ Versão 0.5.0
 - ✅ Funcional
 - ✅ Estável
 - ✅ Pronto para testes reais
 
 - ## ✅ Versão 0.6.0
--✅ Player estável
--✅ Controle de tempo
--✅ SeekBar funcional
--✅ Avanço automático entre músicas
+<small>
+- ✅ Player estável  
+- ✅ Controle de tempo  
+- ✅ SeekBar funcional  
+- ✅ Avanço automático entre músicas  
+</small>
 - 
 - - 🔧 Em desenvolvimento contínuo
 
