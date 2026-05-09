@@ -111,10 +111,10 @@ Essa estratégia reduz regressões e facilita manutenção e evolução.
 - ✅ Pronto para testes reais
 
 - ## ✅ Versão 0.6.0
-- Player estável
-- Controle de tempo
-- SeekBar funcional
-- Avanço automático entre músicas
+-✅ Player estável
+-✅ Controle de tempo
+-✅ SeekBar funcional
+-✅ Avanço automático entre músicas
 - 
 - - 🔧 Em desenvolvimento contínuo
 
