@@ -68,7 +68,7 @@ Essa combinação fornece uma experiência completa e intuitiva para o usuário.
 
 As funcionalidades abaixo fazem parte da evolução do projeto e **ainda não estão implementadas**:
 
-### 1️⃣ Avanço Automático de Faixas
+### 1️⃣ Avanço Automático de Faixas (REsolvido)
 - Ao término de uma música, o player ainda não avança automaticamente para a próxima.
 - Planejado usar `MediaPlayer.OnCompletionListener`.
 
@@ -105,10 +105,18 @@ Essa estratégia reduz regressões e facilita manutenção e evolução.
 ---
 
 ## 📂 Status do Projeto
+- ## ✅ Versão 0.5.0
 - ✅ Funcional
 - ✅ Estável
 - ✅ Pronto para testes reais
-- 🔧 Em desenvolvimento contínuo
+
+- ## ✅ Versão 0.6.0
+- Player estável
+- Controle de tempo
+- SeekBar funcional
+- Avanço automático entre músicas
+- 
+- - 🔧 Em desenvolvimento contínuo
 
 ---
 
