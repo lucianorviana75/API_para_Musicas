@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Permissão para ler músicas -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- Permissões obrigatórias para player moderno -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:allowBackup="true"
@@ -8,6 +13,7 @@
         android:label="MusicPlayerLocal"
         android:theme="@style/Theme.MusicPlayerLocal">
 
+        <!-- Activity principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -19,6 +25,12 @@
             </intent-filter>
 
         </activity>
+
+        <!-- ✅ SERVICE DE MÚSICA (OBRIGATÓRIO PARA BLUETOOTH) -->
+        <service
+            android:name=".service.MusicService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
 
     </application>
 

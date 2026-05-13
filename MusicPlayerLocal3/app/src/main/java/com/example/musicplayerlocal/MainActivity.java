@@ -1,76 +1,156 @@
 package com.example.musicplayerlocal;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.support.v4.media.session.MediaControllerCompat;
+
 import com.example.musicplayerlocal.data.MusicRepository;
+import com.example.musicplayerlocal.service.MusicService;
+import android.support.v4.media.session.MediaControllerCompat;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView listaMusicas;
-    private TextView nomeMusica, tempoAtual, tempoTotal;
-    private SeekBar seekBar;
-    private Button botaoPlay, botaoPause, botaoStop, botaoNext, botaoPrev;
+    private ListView lista;
 
+    private Button play;
+    private Button pause;
+    private Button stop;
+    private Button next;
+    private Button prev;
+
+    private ArrayList<String> caminhos = new ArrayList<>();
     private final ArrayList<String> nomes = new ArrayList<>();
-    private final ArrayList<String> caminhos = new ArrayList<>();
-    private int musicaAtual = -1;
-
-    private MediaPlayer mediaPlayer;
-
-    private final Handler handler = new Handler();
-    private Runnable atualizarTempo;
+    private MediaControllerCompat mediaController;
+    private int musicaAtual = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
         setContentView(R.layout.activity_main);
 
-        listaMusicas = findViewById(R.id.listaMusicas);
-        nomeMusica   = findViewById(R.id.nomeMusica);
-        tempoAtual   = findViewById(R.id.tempoAtual);
-        tempoTotal   = findViewById(R.id.tempoTotal);
-        seekBar      = findViewById(R.id.seekBar);
+        lista = findViewById(R.id.listaMusicas);
 
-        botaoPlay  = findViewById(R.id.botaoPlay);
-        botaoPause = findViewById(R.id.botaoPause);
-        botaoStop  = findViewById(R.id.botaoStop);
-        botaoNext  = findViewById(R.id.botaoNext);
-        botaoPrev  = findViewById(R.id.botaoPrev);
+        play  = findViewById(R.id.botaoPlay);
+        pause = findViewById(R.id.botaoPause);
+        stop  = findViewById(R.id.botaoStop);
+        next  = findViewById(R.id.botaoNext);
+        prev  = findViewById(R.id.botaoPrev);
 
-        configurarLista();
-        configurarBotoes();
-        configurarSeekBar();
+        // LISTA
+        lista.setOnItemClickListener((parent, view, position, id) -> {
+            tocarMusica(position);
+        });
+
+        // NEXT
+        next.setOnClickListener(v -> {
+            if (caminhos.isEmpty()) return;
+            musicaAtual = (musicaAtual + 1) % caminhos.size();
+            tocarMusica(musicaAtual);
+        });
+
+        // PREV
+        prev.setOnClickListener(v -> {
+            if (caminhos.isEmpty()) return;
+            musicaAtual--;
+            if (musicaAtual < 0) {
+                musicaAtual = caminhos.size() - 1;
+            }
+            tocarMusica(musicaAtual);
+        });
+
+        // PLAY
+        play.setOnClickListener(v -> {
+            startService(new Intent(this, MusicService.class)
+                    .setAction(MusicService.ACTION_RESUME));
+        });
+
+        // PAUSE
+        pause.setOnClickListener(v -> {
+            startService(new Intent(this, MusicService.class)
+                    .setAction(MusicService.ACTION_PAUSE));
+        });
+
+        // STOP
+        stop.setOnClickListener(v -> {
+            startService(new Intent(this, MusicService.class)
+                    .setAction(MusicService.ACTION_STOP));
+        });
+
         pedirPermissao();
     }
 
-    /* ===== LISTA ===== */
 
-    private void configurarLista() {
-        listaMusicas.setOnItemClickListener((parent, view, position, id) -> {
-            musicaAtual = position;
-            tocarMusica(position);
-        });
+    private void tocarMusica(int index) {
+
+        musicaAtual = index;
+
+        Intent i = new Intent(this, MusicService.class);
+        i.setAction(MusicService.ACTION_PLAY);
+
+        i.putStringArrayListExtra(
+                MusicService.EXTRA_PLAYLIST,
+                caminhos
+        );
+
+        i.putExtra(
+                MusicService.EXTRA_INDEX,
+                index
+        );
+
+        ContextCompat.startForegroundService(this, i);
     }
 
-    private void carregarLista() {
+    private void tocar() {
+
+        // 1️⃣ Inicia o Service normalmente
+        Intent i = new Intent(this, MusicService.class);
+        i.setAction(MusicService.ACTION_PLAY);
+        i.putStringArrayListExtra(MusicService.EXTRA_PLAYLIST, caminhos);
+        i.putExtra(MusicService.EXTRA_INDEX, musicaAtual);
+
+        ContextCompat.startForegroundService(this, i);
+
+        // 2️⃣ Aguarda a MediaSession existir e registra o controller
+        lista.postDelayed(() -> {
+            try {
+                MediaControllerCompat mediaController =
+                        MediaControllerCompat.getMediaController(this);
+
+                if (mediaController == null) {
+                    mediaController = new MediaControllerCompat(
+                            this,
+                            android.support.v4.media.session.MediaControllerCompat
+                                    .getMediaController(this)
+                                    .getSessionToken()
+                    );
+                    MediaControllerCompat.setMediaController(this, mediaController);
+                }
+
+                this.mediaController = mediaController;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 300);
+    }
+    private void carregar() {
         caminhos.clear();
         caminhos.addAll(MusicRepository.getAllMusicPaths(this));
 
@@ -79,130 +159,12 @@ public class MainActivity extends AppCompatActivity {
             nomes.add(new File(p).getName());
         }
 
-        listaMusicas.setAdapter(
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_list_item_activated_1,
-                        nomes
-                )
-        );
+        lista.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_activated_1,
+                nomes
+        ));
     }
-
-    /* ===== PLAYER ===== */
-
-    private void tocarMusica(int index) {
-        pararMusica();
-
-        mediaPlayer = MediaPlayer.create(this, Uri.parse(caminhos.get(index)));
-        mediaPlayer.start();
-
-        nomeMusica.setText(nomes.get(index));
-        listaMusicas.setItemChecked(index, true);
-
-        tempoTotal.setText(formatarTempo(mediaPlayer.getDuration()));
-        seekBar.setMax(mediaPlayer.getDuration());
-
-        iniciarAtualizacaoTempo();
-
-        // ✅ AUTO-NEXT
-        mediaPlayer.setOnCompletionListener(mp -> {
-            musicaAtual = (musicaAtual + 1) % caminhos.size();
-            tocarMusica(musicaAtual);
-        });
-    }
-
-    private void pararMusica() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-
-        finalizarAtualizacaoTempo();
-        seekBar.setProgress(0);
-        tempoAtual.setText("0:00");
-        tempoTotal.setText("0:00");
-    }
-
-    /* ===== BOTÕES ===== */
-
-    private void configurarBotoes() {
-
-        botaoPlay.setOnClickListener(v -> {
-            if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-                mediaPlayer.start();
-                iniciarAtualizacaoTempo();
-            }
-        });
-
-        botaoPause.setOnClickListener(v -> {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            }
-        });
-
-        botaoStop.setOnClickListener(v -> pararMusica());
-
-        botaoNext.setOnClickListener(v -> {
-            musicaAtual = (musicaAtual + 1) % caminhos.size();
-            tocarMusica(musicaAtual);
-        });
-
-        botaoPrev.setOnClickListener(v -> {
-            musicaAtual = (musicaAtual - 1 + caminhos.size()) % caminhos.size();
-            tocarMusica(musicaAtual);
-        });
-    }
-
-    /* ===== SEEKBAR + TEMPO ===== */
-
-    private void configurarSeekBar() {
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && mediaPlayer != null) {
-                    mediaPlayer.seekTo(progress);
-                    tempoAtual.setText(formatarTempo(progress));
-                }
-            }
-
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-    }
-
-    private void iniciarAtualizacaoTempo() {
-        finalizarAtualizacaoTempo();
-
-        atualizarTempo = new Runnable() {
-            @Override
-            public void run() {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    int pos = mediaPlayer.getCurrentPosition();
-                    tempoAtual.setText(formatarTempo(pos));
-                    seekBar.setProgress(pos);
-                    handler.postDelayed(this, 1000);
-                }
-            }
-        };
-
-        handler.post(atualizarTempo);
-    }
-
-    private void finalizarAtualizacaoTempo() {
-        if (atualizarTempo != null) {
-            handler.removeCallbacks(atualizarTempo);
-        }
-    }
-
-    private String formatarTempo(int millis) {
-        int segundos = (millis / 1000) % 60;
-        int minutos = (millis / 1000) / 60;
-        return String.format("%d:%02d", minutos, segundos);
-    }
-
-    /* ===== PERMISSÃO ===== */
 
     private void pedirPermissao() {
         if (ContextCompat.checkSelfPermission(
@@ -215,28 +177,16 @@ public class MainActivity extends AppCompatActivity {
                     1
             );
         } else {
-            carregarLista();
+            carregar();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == 1 &&
-                grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            carregarLista();
+            int r, @NonNull String[] p, @NonNull int[] g) {
+        super.onRequestPermissionsResult(r, p, g);
+        if (r == 1 && g.length > 0 && g[0] == PackageManager.PERMISSION_GRANTED) {
+            carregar();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        pararMusica();
     }
 }
