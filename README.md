@@ -112,21 +112,31 @@ Essa estratégia reduz regressões e facilita manutenção e evolução.
 - ✅ Pronto para testes reais
 
 - ## ✅ Versão 0.6.0
-<small>
 - ✅ Player estável  
 - ✅ Controle de tempo  
 - ✅ SeekBar funcional  
-- ✅ Avanço automático entre músicas  
-</small>
+- ✅ Avanço automático entre músicas
+
+- ## ✅ Versão 7.1.1## ✅ Versão✅ Reprodução via Service implementada
+- ✅ Envio de playlist corrigido (Activity → Service)  
+- ✅ Arquitetura organizada (Activity + Service)  
+- ✅ Base preparada para Bluetooth e MediaSession  
+- ✅ Interface com SeekBar e lista de músicas  
+- ✅ Player funcional e estável  
+- ✅ Play / Pause / Stop funcionando corretamente  
+- ✅ Próxima / Anterior música funcionando  
+
+
+
 - 
 - - 🔧 Em desenvolvimento contínuo
 
 ---
 
 ## 🚀 Próximos Passos
-- Implementar avanço automático de músicas
-- Criar serviço em segundo plano com controles de mídia
-- Melhorar integração com Bluetooth
+- Implementar avanço automático de músicas(Em processo)
+- Criar serviço em segundo plano com controles de mídia(resolvido)
+- Melhorar integração com Bluetooth(resolvido)
 - Refinar interface visual
 - Publicar releases no GitHub
 - Gerar versão para Play Store
